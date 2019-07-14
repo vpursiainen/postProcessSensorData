@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 
-def postprocessAndSave(sensor_file, occupancy_file):
+def processAndSave(sensor_file, occupancy_file):
     data = pd.read_csv(sensor_file)
     occupancy_data = pd.read_csv(occupancy_file)
     occupancy_data = occupancy_data.sort_values(by=['collectedAt'])
@@ -28,7 +28,7 @@ def postprocessAndSave(sensor_file, occupancy_file):
                 date_data[8] = str(row['sensorValues.1.value'])
         ml_data.append(','.join(date_data) + '\n')
 
-    out_file_name = 'POSTPROCESSED_' + sensor_file
+    out_file_name = 'PROCESSED_' + sensor_file
     with open(out_file_name, 'w+') as f_out:
         string_data = ''.join(str(line) for line in ml_data)
         f_out.write(string_data)
@@ -54,4 +54,4 @@ def getOccupancy(occupancy_data, date):
     return occupancy
 
 if __name__ == '__main__':
-    postprocessAndSave(*sys.argv[1:])
+    processAndSave(*sys.argv[1:])
