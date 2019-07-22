@@ -15,27 +15,29 @@ def processAndSave(sensor_file, occupancy_file):
     occupancy_day_grouped = occupancy_data.groupby(['Day'])
 
     ml_data = []
-    ml_data.append('Day,Time,Sound level (mV),Sound level (dB),Distance (cm),Light (full),Light (infrared),Light (visible),Temperature (C),Humidity (%),Occupancy\n')
+    ml_data.append('Day,Time,Time value,Sound level (mV),Sound level (dB),Distance (cm),Light (full),Light (infrared),Light (visible),Temperature (C),Humidity (%),Occupancy\n')
     for day, day_group in days_grouped:
         grouped = day_group.groupby(['Time'])
         for time, date_group in grouped:
-            date_data = [None] * 11
+            date_data = [None] * 12
             date_data[0] = day
             date_data[1] = time
-            date_data[10] = str(getOccupancy(occupancy_day_grouped.get_group(day), time))
+            m = str(time).split(":")
+            date_data[2] = str(int(m[0])+int(m[1])/60 + int(m[2])/3600)
+            date_data[11] = str(getOccupancy(occupancy_day_grouped.get_group(day), time))
             for row_ind, row in date_group.iterrows():
                 if row['sensorName'] == 'Light':
-                    date_data[5] = str(row['sensorValues.0.value'])
-                    date_data[6] = str(row['sensorValues.1.value'])
-                    date_data[7] = str(row['sensorValues.2.value'])
+                    date_data[6] = str(row['sensorValues.0.value'])
+                    date_data[7] = str(row['sensorValues.1.value'])
+                    date_data[8] = str(row['sensorValues.2.value'])
                 elif row['sensorName'] == 'Distance sensor':
-                    date_data[4] = str(row['sensorValues.0.value'])
+                    date_data[5] = str(row['sensorValues.0.value'])
                 elif row['sensorName'] == 'Sound sensor':
-                    date_data[2] = str(row['sensorValues.0.value'])
-                    date_data[3] = str(row['sensorValues.1.value'])
+                    date_data[3] = str(row['sensorValues.0.value'])
+                    date_data[4] = str(row['sensorValues.1.value'])
                 elif row['sensorName'] == 'TemperatureAndHumidity':
-                    date_data[8] = str(row['sensorValues.0.value'])
-                    date_data[9] = str(row['sensorValues.1.value'])
+                    date_data[9] = str(row['sensorValues.0.value'])
+                    date_data[10] = str(row['sensorValues.1.value'])
             ml_data.append(','.join(date_data) + '\n')
 
     out_file_name = 'PROCESSED_' + sensor_file
