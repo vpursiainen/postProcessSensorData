@@ -9,7 +9,7 @@ def formatDatesAndTimes(data, occupancy):
         row_name = 'createdAt'
     for index, row in data.iterrows():
         date = row[row_name]
-        day = date[:9]
+        day = date[:10]
         time = date[11:19]
         days.append(day)
         times.append(time)
